@@ -1,6 +1,16 @@
 # Multi-Agent TDD Workflow
 
-一套給 OpenCode 使用的 multi-agent TDD workflow。它將需求拆成可驗證的 task，並由不同 agent 分別負責測試與 production code，讓每個變更都遵循 Red-Green TDD cycle。
+一套給 OpenCode 使用的 multi-agent TDD workflow。它將需求拆成可驗證的 task，並由不同 agent 分別負責測試與功能實作，讓每個變更都遵循 Red-Green TDD cycle。
+
+## Features
+
+- **真正落實 Red-Green TDD**：每個 test case 都先確認有效的 Red，再進行最小功能實作，避免直接猜測或過度開發。
+- **測試與實作由不同 Agent 負責**：`tdd-test-writer` 只寫 unit tests，`tdd-implementor` 只做功能實作，降低修改測試來掩蓋問題的風險。
+- **把大型需求拆成可管理的小步驟**：`tdd-plan` 將 spec 或 ticket 拆成有順序、可驗證、具備 dependencies 的 TDD task。
+- **可恢復，不怕中斷**：執行狀態保存於 `.tdd/state.yaml`，工作中斷後可以從目前的 task 與 test case 繼續。
+- **失敗處理有明確規則**：Test writing 與功能實作各最多五次嘗試；實作失敗時會 rollback，避免不完整的變更污染後續結果。
+- **結果透明且容易 review**：`.tdd/final-report.md` 會記錄測試結果、失敗原因、變更檔案、typecheck、build 與 regression 狀態。
+- **適用於既有專案**：只需要將 agents 與 skills 合併到既有 `.opencode/`，不要求更換原本的測試框架或開發流程。
 
 ## Workflow
 
@@ -38,18 +48,18 @@ flowchart TD
 
 ## Skill 分工
 
-| Skill | 職責 |
-| --- | --- |
+| Skill      | 職責                                                                                                      |
+| ---------- | --------------------------------------------------------------------------------------------------------- |
 | `tdd-plan` | 讀取 spec 或 ticket，拆解成包含 acceptance criteria 與 test cases 的 TDD task files，並寫入 `.tdd/tasks/` |
-| `tdd-run` | 執行完整 TDD workflow，管理 recovery mode 與流程規則 |
+| `tdd-run`  | 執行完整 TDD workflow，管理 recovery mode 與流程規則                                                      |
 
 ## Agent 分工
 
-| Agent | 職責 |
-| --- | --- |
-| `tdd-orchestrator` | 控制流程、執行測試、管理狀態與產生報告 |
-| `tdd-test-writer` | 只撰寫 unit tests |
-| `tdd-implementor` | 只修改 production code，完成目前的 test case |
+| Agent              | 職責                                         |
+| ------------------ | -------------------------------------------- |
+| `tdd-orchestrator` | 控制流程、執行測試、管理狀態與產生報告       |
+| `tdd-test-writer`  | 只撰寫 unit tests                            |
+| `tdd-implementor`  | 只修改 production code，完成目前的 test case |
 
 核心規則：一次只處理一個 test case；測試必須透過 public seam 驗證 observable behavior；test writing 與 implementation 各最多五次嘗試。
 
@@ -57,10 +67,17 @@ flowchart TD
 
 ### 1. 安裝 workflow
 
-將本專案的 `.opencode/` 複製到目標專案根目錄：
+將本 workflow 的 `agents/` 與 `skills/` 內容合併到目標專案的 `.opencode/`。
 
 ```bash
-cp -R /path/to/ai-tdd-demo/.opencode /path/to/your-project/
+mkdir -p /path/to/your-project/.opencode/agents \
+         /path/to/your-project/.opencode/skills
+
+cp -R /path/to/ai-tdd-demo/agents/. \
+      /path/to/your-project/.opencode/agents/
+
+cp -R /path/to/ai-tdd-demo/skills/. \
+      /path/to/your-project/.opencode/skills/
 ```
 
 ### 2. 準備需求
@@ -110,9 +127,3 @@ cp -R /path/to/ai-tdd-demo/.opencode /path/to/your-project/
 - `tdd-test-writer` 不得修改 production code；`tdd-implementor` 不得修改測試。
 - Orchestrator 不會存取 secrets、`.env`、network，也不會 push 或建立 PR。
 - Workflow 完成後請人工 review production diff、test diff 與 `final-report.md`。
-
-## 相關文件
-
-- [使用指南](docs/multi-agent-tdd-workflow-guide.md)
-- [設計報告](docs/multi-agent-tdd-workflow-design.md)
-# opencode-multi-agents-tdd

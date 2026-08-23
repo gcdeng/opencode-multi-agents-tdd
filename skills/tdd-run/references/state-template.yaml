@@ -1,0 +1,12 @@
+version: 2
+workflow_status: PLANNED
+current_task: null
+current_test_case: null
+
+tasks: {}
+
+# Each task stores status (PENDING / IN_PROGRESS / PASSED / FAILED / BLOCKED)
+# and test_cases. Each test case stores status (PENDING / WRITING_TEST /
+# TEST_RED / IMPLEMENTING / PASSED / FAILED / BLOCKED), writer_attempts,
+# implementor_attempts, and failure_reason when applicable. The attempt limit
+# is always 5. Detailed command results belong in final-report.md.
