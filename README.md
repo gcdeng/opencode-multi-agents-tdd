@@ -46,6 +46,27 @@ flowchart TD
     V --> W["產生 .tdd/final-report.md"]
 ```
 
+### 流程步驟
+
+1. **準備需求**：提供 spec 或 ticket，建議使用 mattpocock `/to-spec`, `/to-tickets` skill。
+2. **`/tdd-plan`**：將需求拆成有順序、可驗證的 TDD task files，寫入 `.tdd/tasks/`，定義 public seam 與 test cases。
+3. **啟動 `tdd-orchestrator` 並執行 `/tdd-run`**：載入 `.tdd/state.yaml`、驗證 task metadata 與 dependency graph、偵測 test/typecheck/build 命令。
+4. **Baseline test**：失敗 → 標記 `BLOCKED`、產生 final report 並停止；通過 → 進入 task 迴圈。
+5. 🔁 **迴圈 A — 遍歷每個 task（依 dependency 順序）**
+   - 選下一個 task；若 dependency 為 `FAILED`/`BLOCKED`，此 task 標記 `BLOCKED` 並跳過。
+   - 🔁 **迴圈 B — 遍歷該 task 的每個 test case（依檔案順序，一次一個）**
+     - **Phase 1 / Test Writing (Red)**：設 `WRITING_TEST`，委派 `tdd-test-writer` 寫測試，執行 focused test。
+       - 有效 Red → 設 `TEST_RED`，進 Phase 2。
+       - Already green 且為有效行為斷言 → 標記 `PASSED`（`already_green`），回到迴圈 B。
+       - 無效 failure → 🔁 **迴圈 C — writer retry（最多 5 次）**：重新呼叫 `tdd-test-writer`（同一 test identity）；達 5 次仍失敗 → `FAILED: TEST_AUTHORING_FAILED`，繼續下個 test case。
+     - **Phase 2 / Implementation (Green)**：設 `IMPLEMENTING`，委派 `tdd-implementor` 做最小實作，執行 focused test。
+       - 通過 → `PASSED`，回到迴圈 B。
+       - 失敗 → 🔁 **迴圈 D — implementor retry（最多 5 次）**：重新呼叫 `tdd-implementor`；達 5 次仍失敗 → rollback 該 case 的 production 變更、`FAILED: IMPLEMENTATION_FAILED`、同 task 剩餘 cases 標 `BLOCKED`（rollback 範圍不明確時改標 `BLOCKED` 並停止該 path）。
+   - 迴圈 B 結束後：跑 task regression + typecheck + build。全通過 → `PASSED` 並建立 task-level git checkpoint（僅 stage 該 task 變更，不含 `.tdd/`）；任一失敗 → `FAILED`。
+   - 回到迴圈 A。
+6. **所有 task 處理完**：執行一次 full regression。
+7. **產生 `.tdd/final-report.md`**：整體狀態 `COMPLETED`（全通過）或 `FAILED`，交使用者 review。
+
 ## Skill 分工
 
 | Skill      | 職責                                                                                                      |

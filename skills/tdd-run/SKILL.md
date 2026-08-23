@@ -70,7 +70,12 @@ Process tasks in dependency order; never run tasks in parallel. Within a task, p
 
 ### Task Completion
 
-After all runnable test cases in a task are processed, run task regression, typecheck, and build. Mark the task `PASSED` only when every test case passed and all checks pass; otherwise `FAILED`. Block tasks that depend on a failed task, but continue independent tasks.
+After all runnable test cases in a task are processed:
+
+- If every test case is `PASSED`, run task regression, typecheck, and build. Mark the task `PASSED` only when all checks pass; otherwise mark it `FAILED`.
+- If any test case is `FAILED` or `BLOCKED`, mark the task `FAILED` directly. Skip task regression, typecheck, and build, record those checks as `NOT RUN` with the reason `skipped: task already failed`, and do not create a git checkpoint.
+
+Block tasks that depend on a failed task, but continue independent tasks.
 
 When a task is `PASSED`, create a git checkpoint before starting the next task (skip if checkpoints were disabled in Startup):
 

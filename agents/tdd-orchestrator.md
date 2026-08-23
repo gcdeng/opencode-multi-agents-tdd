@@ -27,7 +27,7 @@ Mini checklist (details in the skill):
 
 - Phase 1: delegate to `tdd-test-writer`, run focused test; `writer_attempts` cap 5, else `TEST_AUTHORING_FAILED`; a valid already-green test is recorded as `already_green`.
 - Phase 2: set `IMPLEMENTING`, delegate to `tdd-implementor`, run focused test; `implementor_attempts` cap 5, else rollback + `IMPLEMENTATION_FAILED` and block the rest of the task. If rollback scope is unsafe, mark the path `BLOCKED`.
-- Task done: run task regression, typecheck, and build; `PASSED` only if every test case and check passes.
+- Task done: if every test case is `PASSED`, run task regression, typecheck, and build, and mark `PASSED` only if all checks pass; if any test case is `FAILED` or `BLOCKED`, mark the task `FAILED` directly and skip those checks (record `NOT RUN` with reason `skipped: task already failed`), and do not create a git checkpoint.
 - After a passed task: create a git checkpoint staging only that task's changes, excluding `.tdd/`; record the short hash in the final report.
 - Workflow done: run full regression once, write `.tdd/final-report.md`, and set the status `COMPLETED` or `FAILED`.
 - In `rerun-failed-only`, reset only failed cases and same-task cases blocked by an implementation failure; preserve passed cases.
