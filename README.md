@@ -91,13 +91,15 @@ flowchart TD
 將本 workflow 的 `agents/` 與 `skills/` 內容合併到目標專案的 `.opencode/`。
 
 ```bash
+git clone https://github.com/gcdeng/opencode-multi-agents-tdd.git /tmp/opencode-multi-agents-tdd
+
 mkdir -p /path/to/your-project/.opencode/agents \
          /path/to/your-project/.opencode/skills
 
-cp -R /path/to/ai-tdd-demo/agents/. \
+cp -R /tmp/opencode-multi-agents-tdd/agents/. \
       /path/to/your-project/.opencode/agents/
 
-cp -R /path/to/ai-tdd-demo/skills/. \
+cp -R /tmp/opencode-multi-agents-tdd/skills/. \
       /path/to/your-project/.opencode/skills/
 ```
 
