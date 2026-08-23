@@ -52,7 +52,7 @@ Process tasks in dependency order; never run tasks in parallel. Within a task, p
 ### Phase 1: Test Writing (Red Confirmation)
 
 1. Set the task and test case status to `WRITING_TEST`; initialize `writer_attempts: 0`.
-2. Delegate the active test case to `tdd-test-writer`.
+2. Delegate the active test case to `tdd-test-writer`; pass the task file path and the active test case id so the writer can read the task's Public Seam, acceptance criteria, and the test case's Given/When/Then.
 3. Run the focused test.
    - Passes: verify it is a real behavior assertion, not tautological. If valid, mark it `PASSED` with result `already_green`; do not manufacture a Red failure.
    - Fails for an invalid reason (syntax, import, environment, does not verify acceptance criteria, unrelated): treat as authoring failure.
@@ -62,7 +62,7 @@ Process tasks in dependency order; never run tasks in parallel. Within a task, p
 ### Phase 2: Implementation
 
 6. Record the production files in scope.
-7. Set the test case status to `IMPLEMENTING` and persist it. Invoke `tdd-implementor`; increment `implementor_attempts` (first invocation = 1).
+7. Set the test case status to `IMPLEMENTING` and persist it. Invoke `tdd-implementor` with the task file path, active test case id, and focused test failure output; increment `implementor_attempts` (first invocation = 1).
 8. Run the focused test.
    - Passes: mark the test case `PASSED` and select the next test case.
    - Fails and `implementor_attempts < 5`: retry with a new `tdd-implementor` invocation.
