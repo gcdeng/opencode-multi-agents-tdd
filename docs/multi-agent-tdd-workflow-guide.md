@@ -206,9 +206,9 @@ result: already_green
 
 每個 test case 有兩組獨立上限：
 
-| 階段 | 上限 | 失敗結果 |
-| --- | ---: | --- |
-| test writing / Red confirmation | 5 次 | `TEST_AUTHORING_FAILED` |
+| 階段                                | 上限 | 失敗結果                |
+| ----------------------------------- | ---: | ----------------------- |
+| test writing / Red confirmation     | 5 次 | `TEST_AUTHORING_FAILED` |
 | implementation / Green confirmation | 5 次 | `IMPLEMENTATION_FAILED` |
 
 ### Test authoring failure
@@ -270,7 +270,6 @@ Task 標記為 `PASSED` 後，若 repository 是 git worktree，orchestrator 會
 state 只保存恢復執行所需的最小資訊：
 
 ```yaml
-version: 2
 workflow_status: RUNNING
 current_task: TASK-001
 current_test_case: TC-002
@@ -295,15 +294,15 @@ Task-level git checkpoint 不寫入 `state.yaml`；commit hash 或 checkpoint �
 
 Test case status 表示目前要恢復的階段：
 
-| Status | 恢復動作 |
-| --- | --- |
-| `PENDING` | 開始 test-writer |
+| Status         | 恢復動作                                        |
+| -------------- | ----------------------------------------------- |
+| `PENDING`      | 開始 test-writer                                |
 | `WRITING_TEST` | 重新執行 focused test，必要時 retry test-writer |
-| `TEST_RED` | 呼叫 implementor |
-| `IMPLEMENTING` | 重新執行 focused test，再決定是否 retry |
-| `PASSED` | 跳過 |
-| `FAILED` | 跳過並保留在 report |
-| `BLOCKED` | 跳過，等待 dependency 或 task 修正 |
+| `TEST_RED`     | 呼叫 implementor                                |
+| `IMPLEMENTING` | 重新執行 focused test，再決定是否 retry         |
+| `PASSED`       | 跳過                                            |
+| `FAILED`       | 跳過並保留在 report                             |
+| `BLOCKED`      | 跳過，等待 dependency 或 task 修正              |
 
 ### `.tdd/final-report.md`
 

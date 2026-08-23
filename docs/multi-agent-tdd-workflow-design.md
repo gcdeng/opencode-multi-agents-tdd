@@ -294,13 +294,13 @@ FAILED
 
 ### Task 狀態說明
 
-| 狀態        | 含義                                                                         |
-| ----------- | ---------------------------------------------------------------------------- |
-| PENDING     | 尚未開始，等待前置 task 完成                                                 |
-| IN_PROGRESS | 正在處理 test cases 或執行 task-level regression / typecheck / build          |
-| PASSED      | 所有 test cases 通過，regression、typecheck 與 build 通過                   |
-| BLOCKED     | baseline 失敗、rollback 無法安全完成，或 dependency 失敗                  |
-| FAILED      | 有 test case 失敗，但 workflow 繼續執行其他 task                             |
+| 狀態        | 含義                                                                 |
+| ----------- | -------------------------------------------------------------------- |
+| PENDING     | 尚未開始，等待前置 task 完成                                         |
+| IN_PROGRESS | 正在處理 test cases 或執行 task-level regression / typecheck / build |
+| PASSED      | 所有 test cases 通過，regression、typecheck 與 build 通過            |
+| BLOCKED     | baseline 失敗、rollback 無法安全完成，或 dependency 失敗             |
+| FAILED      | 有 test case 失敗，但 workflow 繼續執行其他 task                     |
 
 ### Test Case 狀態
 
@@ -325,20 +325,19 @@ IMPLEMENTATION_FAILED   (implementor 實作 5 次仍不通過)
 
 ### Test Case 狀態說明
 
-| 狀態                  | 含義                                                                    |
-| --------------------- | ----------------------------------------------------------------------- |
-| PENDING               | 尚未開始，等待前置 test case 完成                                       |
-| WRITING_TEST          | test writer 正在撰寫/重寫測試，累計 `writer_attempts`                    |
-| TEST_RED              | 測試已確認有效 Red（測試失敗且失敗原因是 production behavior 尚未實作） |
-| IMPLEMENTING          | implementor 正在實作，累計 `implementor_attempts`                       |
-| PASSED                | 測試通過，進入下一個 test case                                          |
-| FAILED                | 超過 retry 上限；implementation failure 會 rollback 並 block 同 task cases |
-| BLOCKED               | 被 implementation failure 或 failed dependency 阻擋                     |
+| 狀態         | 含義                                                                       |
+| ------------ | -------------------------------------------------------------------------- |
+| PENDING      | 尚未開始，等待前置 test case 完成                                          |
+| WRITING_TEST | test writer 正在撰寫/重寫測試，累計 `writer_attempts`                      |
+| TEST_RED     | 測試已確認有效 Red（測試失敗且失敗原因是 production behavior 尚未實作）    |
+| IMPLEMENTING | implementor 正在實作，累計 `implementor_attempts`                          |
+| PASSED       | 測試通過，進入下一個 test case                                             |
+| FAILED       | 超過 retry 上限；implementation failure 會 rollback 並 block 同 task cases |
+| BLOCKED      | 被 implementation failure 或 failed dependency 阻擋                        |
 
 ### `state.yaml`
 
 ```yaml
-version: 2
 workflow_status: RUNNING
 current_task: TASK-001
 current_test_case: TC-001
@@ -503,10 +502,10 @@ Orchestrator 呼叫 `tdd-implementor`，提供：
 
 每個 test case 有兩組獨立計數器：
 
-| 階段                            | Agent           | 計數器                     | 上限 | 失敗後標記              |
-| ------------------------------- | --------------- | -------------------------- | ---: | ----------------------- |
-| Test Writing (Red Confirmation) | tdd-test-writer | `writer_attempts`          |    5 | `TEST_AUTHORING_FAILED` |
-| Implementation                  | tdd-implementor | `implementor_attempts`     |    5 | `IMPLEMENTATION_FAILED` |
+| 階段                            | Agent           | 計數器                 | 上限 | 失敗後標記              |
+| ------------------------------- | --------------- | ---------------------- | ---: | ----------------------- |
+| Test Writing (Red Confirmation) | tdd-test-writer | `writer_attempts`      |    5 | `TEST_AUTHORING_FAILED` |
+| Implementation                  | tdd-implementor | `implementor_attempts` |    5 | `IMPLEMENTATION_FAILED` |
 
 兩階段各自獨立計數，互不影響。
 
@@ -671,7 +670,7 @@ remaining concerns
 - Test Cases: 2/2 passed
 
 | Test Case | Status | Test Writer Attempts | Implementor Attempts | Max Attempts (each) |
-| --------- | ------ | -------------------: | --------------------: | ------------------: |
+| --------- | ------ | -------------------: | -------------------: | ------------------: |
 | TC-001    | PASSED |                    1 |                    1 |                   5 |
 | TC-002    | PASSED |                    1 |                    3 |                   5 |
 
@@ -682,7 +681,7 @@ remaining concerns
 - Test Cases: 1/1 passed
 
 | Test Case | Status | Test Writer Attempts | Implementor Attempts | Max Attempts (each) |
-| --------- | ------ | -------------------: | --------------------: | ------------------: |
+| --------- | ------ | -------------------: | -------------------: | ------------------: |
 | TC-003    | PASSED |                    1 |                    2 |                   5 |
 
 ## Files Changed
